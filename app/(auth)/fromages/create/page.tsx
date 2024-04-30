@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,76 +11,61 @@ import {
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { FormEvent } from "react";
+import { createFromage } from "@/actions/fromages";
+import { useFormState } from "react-dom";
+import { ButtonForm } from "@/components/ui/button-form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { fromageSchema } from "@/schemas/fromages";
+import { z } from "zod";
 
 export default function Dashboard() {
+  /*const [state, action] = useFormState(createFromage, null);
+  console.log(state);*/
+  const customOnSubmit = async (data: z.infer<typeof fromageSchema>) => {
+    const demo = await createFromage({
+      title: data.title,
+    });
+    console.log(demo);
+  };
+
+  const { register, handleSubmit, formState } = useForm<
+    z.infer<typeof fromageSchema>
+  >({
+    resolver: zodResolver(fromageSchema),
+  });
+  console.log(formState.errors);
   return (
     <div className="flex min-h-screen w-full flex-col">
       <main className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col gap-4 bg-muted/40 p-4 md:gap-8 md:p-10">
-        <div className="mx-auto grid w-full max-w-6xl gap-2">
-          <h1 className="text-3xl font-semibold">Settings</h1>
-        </div>
-        <div className="mx-auto grid w-full max-w-6xl items-start gap-6 md:grid-cols-[180px_1fr] lg:grid-cols-[250px_1fr]">
-          <nav
-            className="grid gap-4 text-sm text-muted-foreground"
-            x-chunk="dashboard-04-chunk-0"
-          >
-            <Link href="#" className="font-semibold text-primary">
-              General
-            </Link>
-            <Link href="#">Security</Link>
-            <Link href="#">Integrations</Link>
-            <Link href="#">Support</Link>
-            <Link href="#">Organizations</Link>
-            <Link href="#">Advanced</Link>
-          </nav>
-          <div className="grid gap-6">
-            <Card x-chunk="dashboard-04-chunk-1">
-              <CardHeader>
-                <CardTitle>Store Name</CardTitle>
-                <CardDescription>
-                  Used to identify your store in the marketplace.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form>
-                  <Input placeholder="Store Name" />
-                </form>
-              </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Save</Button>
-              </CardFooter>
-            </Card>
-            <Card x-chunk="dashboard-04-chunk-2">
-              <CardHeader>
-                <CardTitle>Plugins Directory</CardTitle>
-                <CardDescription>
-                  The directory within your project, in which your plugins are
-                  located.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form className="flex flex-col gap-4">
-                  <Input
-                    placeholder="Project Name"
-                    defaultValue="/content/plugins"
-                  />
-                  <div className="flex items-center space-x-2">
-                    <Checkbox id="include" defaultChecked />
-                    <label
-                      htmlFor="include"
-                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                    >
-                      Allow administrators to change the directory.
-                    </label>
-                  </div>
-                </form>
-              </CardContent>
-              <CardFooter className="border-t px-6 py-4">
-                <Button>Save</Button>
-              </CardFooter>
-            </Card>
-          </div>
-        </div>
+        <Card x-chunk="dashboard-04-chunk-2">
+          <CardHeader>
+            <CardTitle>Plugins Directory</CardTitle>
+            <CardDescription>
+              The directory within your project, in which your plugins are
+              located.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <form
+              onSubmit={handleSubmit(customOnSubmit)}
+              className="flex flex-col gap-4"
+            >
+              <Input {...register("title", {})} required />
+              <Input {...register("rating")} type="number" required />
+              {formState.errors.title && (
+                <p className="text-red-500">{formState.errors.title.message}</p>
+              )}
+              {formState.errors.rating && (
+                <p className="text-red-500">
+                  {formState.errors.rating.message}
+                </p>
+              )}
+              <ButtonForm>Save</ButtonForm>
+            </form>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
