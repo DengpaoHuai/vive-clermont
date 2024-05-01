@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { CircleUser, Menu, Package2, Search } from "lucide-react";
 import Link from "next/link";
+import AuthProvider from "./auth-provider";
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
